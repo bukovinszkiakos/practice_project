@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: database-config
+  namespace: practice-project
+
+data:
+ POSTGRES_DB: "messagesdb"
+  

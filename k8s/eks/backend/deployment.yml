@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: backend-deployment
+  namespace: practice-project
+
+  labels:
+    app: backend
+
+spec:
+  replicas: 2
+
+  strategy: 
+    type: RollingUpdate
+
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
+  selector:
+    matchLabels:
+      app: backend
+
+  template:
+    metadata:
+      labels:
+        app: backend
+
+    spec:
+
+      terminationGracePeriodSeconds: 30
+
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+
+      containers:
+      - name: backend
+
+        image: 554422868760.dkr.ecr.eu-central-1.amazonaws.com/practice-project-dev-backend:latest
+
+        imagePullPolicy: Always
+
+        ports:
+        - containerPort: 5000
+
+        env:
+
+        - name: PORT
+          valueFrom: 
+            configMapKeyRef:
+              name: backend-config
+              key: PORT
+
+        - name: DB_HOST
+          valueFrom: 
+            configMapKeyRef:
+              name: backend-config
+              key: DB_HOST
+        
+        - name: DB_PORT
+          valueFrom: 
+            configMapKeyRef:
+              name: backend-config
+              key: DB_PORT
+
+        - name: DB_NAME
+          valueFrom: 
+            configMapKeyRef:
+              name: backend-config
+              key: DB_NAME
+        
+        - name: DB_USER
+          valueFrom: 
+            secretKeyRef:
+              name: backend-secret
+              key: DB_USER
+        
+        - name: DB_PASSWORD
+          valueFrom: 
+            secretKeyRef:
+              name: backend-secret
+              key: DB_PASSWORD
+
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+
+        startupProbe:                 
+          httpGet:
+            path: /health
+            port: 5000
+
+          failureThreshold: 10
+          periodSeconds: 5
+          successThreshold: 1
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          failureThreshold: 3
+          timeoutSeconds: 3
+
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+
+          initialDelaySeconds: 20
+          periodSeconds: 20
+          failureThreshold: 3
+          timeoutSeconds: 3
+      
+

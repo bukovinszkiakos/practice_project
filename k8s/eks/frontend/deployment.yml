@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: frontend-deployment
+  namespace: practice-project
+
+  labels:
+    app: frontend
+
+spec:
+  replicas: 2
+
+  strategy: 
+    type: RollingUpdate
+
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
+  selector:
+    matchLabels:
+      app: frontend
+
+  template:
+    metadata:
+      labels:
+        app: frontend
+
+    spec:
+
+      terminationGracePeriodSeconds: 30
+
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+
+      containers:
+      - name: frontend
+
+        image: 554422868760.dkr.ecr.eu-central-1.amazonaws.com/practice-project-dev-frontend:latest
+
+        imagePullPolicy: Always 
+
+        ports:
+        - containerPort: 3000
+
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+
+        startupProbe:                 
+          httpGet:
+            path: /health
+            port: 3000
+
+          failureThreshold: 10
+          periodSeconds: 5
+          successThreshold: 1
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          failureThreshold: 3
+          timeoutSeconds: 3
+
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+
+          initialDelaySeconds: 20
+          periodSeconds: 20
+          failureThreshold: 3
+          timeoutSeconds: 3
+      
+
