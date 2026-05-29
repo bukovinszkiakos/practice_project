@@ -38,6 +38,7 @@ const startServer = async () => {
         console.log(`Server running on port ${process.env.PORT}`);
       });
 
+      
       break;
     } catch (error) {
       console.log("Waiting for database...");
