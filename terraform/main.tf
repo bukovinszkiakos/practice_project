@@ -51,16 +51,15 @@ module "route_table" {
   common_tags = var.common_tags
 }
 
-
 locals {
   rds_ingress_rules = [
     {
-      description     = "Allow PostgreSQL from EKS security group"
+      description     = "Allow PostgreSQL from VPC"
       from_port       = var.db_port
       to_port         = var.db_port
       protocol        = "tcp"
-      cidr_blocks     = []
-      security_groups = [module.eks_security_group.security_group_id]
+      cidr_blocks     = [var.vpc_cidr]
+      security_groups = []
     }
   ]
 }
