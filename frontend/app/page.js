@@ -9,7 +9,7 @@ export default function Home() {
   const fetchMessages = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/messages"
+        "/api/messages"
       );
 
       const data = await response.json();
@@ -28,7 +28,7 @@ export default function Home() {
     if (!text.trim()) return;
 
     try {
-      await fetch("http://localhost:5000/messages", {
+      await fetch("/api/messages", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

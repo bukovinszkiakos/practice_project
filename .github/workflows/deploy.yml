@@ -48,3 +48,27 @@ jobs:
           docker tag $FRONTEND_ECR_REPOSITORY:$IMAGE_TAG ${{ steps.login-ecr.outputs.registry }}/$FRONTEND_ECR_REPOSITORY:latest
           docker push ${{ steps.login-ecr.outputs.registry }}/$FRONTEND_ECR_REPOSITORY:$IMAGE_TAG
           docker push ${{ steps.login-ecr.outputs.registry }}/$FRONTEND_ECR_REPOSITORY:latest
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig \
+          --region $AWS_REGION \
+         --name ${{ secrets.EKS_CLUSTER_NAME }}
+
+      - name: Check cluster access
+        run: |
+         kubectl get nodes
+
+      - name: Apply Kubernetes manifests
+        run: |
+         kubectl apply -f k8s/eks/
+
+      - name: Restart deployments
+        run: |
+          kubectl rollout restart deployment/backend-deployment -n practice-project
+          kubectl rollout restart deployment/frontend-deployment -n practice-project
+
+      - name: Wait for rollout
+        run: |
+          kubectl rollout status deployment/backend-deployment -n practice-project --timeout=300s
+          kubectl rollout status deployment/frontend-deployment -n practice-project --timeout=300s
