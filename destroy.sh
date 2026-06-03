@@ -1,4 +1,4 @@
-kubectl delete -f k8s/
+kubectl delete -R -f k8s/
 
 echo "Waiting for Load Balancers to disappear..."
 
