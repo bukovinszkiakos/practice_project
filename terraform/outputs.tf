@@ -42,3 +42,13 @@ output "rds_db_name" {
   description = "RDS database name."
   value       = module.rds.db_name
 }
+
+output "eks_oidc_issuer" {
+  description = "EKS OIDC issuer"
+  value       = module.eks.oidc_issuer
+}
+
+output "alb_controller_role_arn" {
+  description = "ARN of the ALB Controller IAM role."
+  value       = aws_iam_role.alb_controller.arn
+}

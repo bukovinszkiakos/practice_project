@@ -17,7 +17,7 @@ app.get("/health", (req, res) => {
   });
 });
 
-app.use("/messages", messagesRoutes);
+app.use("/api/messages", messagesRoutes);
 
 const startServer = async () => {
   let retries = 10;
